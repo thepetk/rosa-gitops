@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: audio-to-text
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app.kubernetes.io/instance: audio-to-text-model-server
