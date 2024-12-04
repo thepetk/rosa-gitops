@@ -1,0 +1,59 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ollama-serve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama-serve
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ollama-serve
+    spec:
+      volumes:
+        - name: ollama-storage
+          persistentVolumeClaim:
+            claimName: ollama-storage
+      containers:
+        - resources:
+            limits:
+              nvidia.com/gpu: '1'
+            requests:
+              cpu: 2m
+              memory: 5Gi
+              nvidia.com/gpu: '1'
+          terminationMessagePath: /dev/termination-log
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - 'ollama pull granite3-dense:8b; ollama list'
+          name: container
+          env:
+            - name: OLLAMA_KEEP_ALIVE
+              value: 12h
+            - name: OLLAMA_ORIGINS
+              value: '*'
+          ports:
+            - containerPort: 11434
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /.ollama
+          terminationMessagePolicy: File
+          image: 'quay.io/redhat-ai-dev/ollama-ubi:v0.3.14'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
