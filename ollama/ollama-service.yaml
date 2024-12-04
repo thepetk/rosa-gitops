@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ollama-svc
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 11434
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: ollama-serve
