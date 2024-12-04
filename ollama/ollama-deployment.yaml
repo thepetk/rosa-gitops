@@ -47,7 +47,7 @@ spec:
             - name: ollama-storage
               mountPath: /.ollama
           terminationMessagePolicy: File
-          image: 'quay.io/redhat-ai-dev/ollama-ubi:v0.4.7'
+          image: 'quay.io/redhat-ai-dev/ollama-ubi:v0.3.14'
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
