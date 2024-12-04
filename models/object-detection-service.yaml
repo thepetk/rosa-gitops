@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: object-detection
+spec:
+  ipFamilies:
+    - IPv4
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app.kubernetes.io/instance: object-detection-model-server
+
