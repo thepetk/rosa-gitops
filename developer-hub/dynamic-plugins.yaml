@@ -1,0 +1,42 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dynamic-plugins-rhdh
+  labels:
+    rhdh.redhat.com/ext-config-sync: 'true'
+  annotations:
+    rhdh.redhat.com/backstage-name: developer-hub
+data:
+  dynamic-plugins.yaml: |
+    includes:
+      - dynamic-plugins.default.yaml
+    plugins:
+      - package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-keycloak-backend-dynamic
+        disabled: false
+      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed-backend@0.2.0'
+        integrity: >-
+          sha512-RFjHY/HIer/DbVql3gXoF1iqy6gyVqfrFhW9s92xai6t2Zv6u3nWbj4anY9dtxmZx8eK5hM+ixJ1fXai6qas1g==
+        disabled: false
+      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed-common@0.1.1'
+        integrity: >-
+          sha512-mVDAsKwO30Z4btp5Fb4T148bODYa6IsQlgxsOmLayRZIwonvx9Rg28Pn2CS53rF6xz7Meeqo1hfvzy+i+6wjMQ==
+        disabled: false
+      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed@0.2.0'
+        integrity: >-
+          sha512-WQykZ1pfsTMPHmxXGnpABOU9Khud1sxzitjT45yfsReCOt+n7jaPFz5v3ISZ6cM+bMuO/3hSfHI0zgGqXjWR8Q==
+        disabled: false
+        pluginConfig:
+          dynamicPlugins:
+            frontend:
+              red-hat-developer-hub.backstage-plugin-lightspeed:
+                appIcons:
+                  - name: LightspeedIcon
+                    module: LightspeedPlugin
+                    importName: LightspeedIcon
+                dynamicRoutes:
+                  - path: /lightspeed
+                    importName: LightspeedPage
+                    module: LightspeedPlugin
+                    menuItem:
+                      icon: LightspeedIcon
+                      text: Lightspeed
