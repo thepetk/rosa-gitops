@@ -1,6 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - 
+  - audio-to-text-deployment.yaml
+  - audio-to-text-service.yaml
+  - object-detection-deployment.yaml
+  - object-detection-service.yaml
 
 namespace: models
