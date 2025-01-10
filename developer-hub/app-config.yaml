@@ -66,3 +66,11 @@ data:
       - id: 'ollama-server'
         url: "${OLLAMA_URL}"
         token: "${OLLAMA_TOKEN}"
+    permission:
+      enabled: true
+      rbac:
+        policies-csv-file: ./rbac-policy.csv
+        policyFileReload: true
+        admin:
+          users:
+            - name: user:default/jcollier

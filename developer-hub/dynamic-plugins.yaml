@@ -11,19 +11,11 @@ data:
     includes:
       - dynamic-plugins.default.yaml
     plugins:
-      - package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-keycloak-backend-dynamic
+      - package: ./dynamic-plugins/dist/backstage-community-plugin-rbac
         disabled: false
-      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed-backend@0.2.0'
-        integrity: >-
-          sha512-RFjHY/HIer/DbVql3gXoF1iqy6gyVqfrFhW9s92xai6t2Zv6u3nWbj4anY9dtxmZx8eK5hM+ixJ1fXai6qas1g==
+      - package:  ./dynamic-plugins/dist/backstage-community-plugin-catalog-backend-module-keycloak-dynamic
         disabled: false
-      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed-common@0.1.1'
-        integrity: >-
-          sha512-mVDAsKwO30Z4btp5Fb4T148bODYa6IsQlgxsOmLayRZIwonvx9Rg28Pn2CS53rF6xz7Meeqo1hfvzy+i+6wjMQ==
-        disabled: false
-      - package: '@red-hat-developer-hub/backstage-plugin-lightspeed@0.2.0'
-        integrity: >-
-          sha512-WQykZ1pfsTMPHmxXGnpABOU9Khud1sxzitjT45yfsReCOt+n7jaPFz5v3ISZ6cM+bMuO/3hSfHI0zgGqXjWR8Q==
+      - package: oci://quay.io/karthik_jk/lightspeed:v0.2.2!red-hat-developer-hub-backstage-plugin-lightspeed
         disabled: false
         pluginConfig:
           dynamicPlugins:
@@ -40,3 +32,5 @@ data:
                     menuItem:
                       icon: LightspeedIcon
                       text: Lightspeed
+      - package: oci://quay.io/karthik_jk/lightspeed:v0.2.2!red-hat-developer-hub-backstage-plugin-lightspeed-backend-dynamic
+        disabled: false
