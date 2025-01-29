@@ -4,5 +4,6 @@ resources:
   - backstage.yaml
   - app-config.yaml
   - dynamic-plugins.yaml
+  - rhdh-rbac-policy.yaml
 
 namespace: developer-hub
