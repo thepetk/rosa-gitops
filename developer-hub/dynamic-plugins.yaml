@@ -15,7 +15,7 @@ data:
         disabled: false
       - package:  ./dynamic-plugins/dist/backstage-community-plugin-catalog-backend-module-keycloak-dynamic
         disabled: false
-      - package: oci://quay.io/karthik_jk/lightspeed:v0.3.2!red-hat-developer-hub-backstage-plugin-lightspeed
+      - package: oci://quay.io/karthik_jk/lightspeed:v0.3.3!red-hat-developer-hub-backstage-plugin-lightspeed
         disabled: false
         pluginConfig:
           dynamicPlugins:
@@ -32,5 +32,5 @@ data:
                     menuItem:
                       icon: LightspeedIcon
                       text: Lightspeed
-      - package: oci://quay.io/karthik_jk/lightspeed:v0.3.2!red-hat-developer-hub-backstage-plugin-lightspeed-backend-dynamic
+      - package: oci://quay.io/karthik_jk/lightspeed:v0.3.3!red-hat-developer-hub-backstage-plugin-lightspeed-backend-dynamic
         disabled: false
