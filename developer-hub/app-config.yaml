@@ -61,6 +61,11 @@ data:
                 - resolver: emailMatchingUserEntityProfileEmail
       rules:
           - allow: [Component, Group, User, Resource, Location, Template, API]
+      locations:
+        - type: url
+          target: https://github.com/redhat-ai-dev/ai-lab-template/blob/main/all.yaml
+          rules:
+            - allow: [Location, Template]
     lightspeed:
       servers:
       - id: 'ollama-server'
