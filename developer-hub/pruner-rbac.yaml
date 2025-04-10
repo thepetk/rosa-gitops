@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-pruner
+  namespace: openshift-gitops
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-pruner-role
+  namespace: openshift-gitops
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications"]
+    verbs: ["get", "list", "delete", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-pruner-binding
+  namespace: openshift-gitops
+subjects:
+  - kind: ServiceAccount
+    name: argocd-pruner
+    namespace: openshift-gitops
+roleRef:
+  kind: Role
+  name: argocd-pruner-role
+  apiGroup: rbac.authorization.k8s.io
