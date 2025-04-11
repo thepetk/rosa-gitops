@@ -5,7 +5,5 @@ resources:
   - app-config.yaml
   - dynamic-plugins.yaml
   - rhdh-rbac-policy.yaml
-  - pruner-job.yaml
-  - pruner-rbac.yaml
 
 namespace: developer-hub
