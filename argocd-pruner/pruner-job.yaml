@@ -9,7 +9,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: argocd-pruner
+          serviceAccountName: argocd-pruner-sa
           restartPolicy: Never
           containers:
             - name: prune
