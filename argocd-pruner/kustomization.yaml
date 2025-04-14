@@ -4,4 +4,4 @@ resources:
   - pruner-job.yaml
   - pruner-rbac.yaml
 
-namespace: developer-hub
+namespace: argocd-pruner-ns
