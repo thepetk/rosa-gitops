@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: argocd-template-app-pruner
-  namespace: openshift-gitops
+  namespace: argocd-pruner-ns
 spec:
   schedule: "* */1 * * *"
   jobTemplate:
