@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: argocd-template-app-pruner
+  namespace: openshift-gitops
+spec:
+  schedule: "* */1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: argocd-pruner-sa
+          restartPolicy: Never
+          containers:
+            - name: prune
+              image: quay.io/redhat-ai-dev/utils:latest
+              env:
+                - name: GH_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: pruner-secrets
+                      key: GITOPS_GIT_TOKEN
+                - name: GH_ORG
+                  valueFrom:
+                    secretKeyRef:
+                      name: pruner-secrets
+                      key: GITOPS_GIT_ORG
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  #!/bin/bash
+
+                  NAMESPACE="openshift-gitops"
+                  LABEL_SELECTOR="backstage-name=rolling-demo"
+                  NOW=$(date +%s)
+
+                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.items[]' | while read -r app; do
+                    name=$(echo "$app" | jq -r '.metadata.name')
+                    creation_ts=$(echo "$app" | jq -r '.metadata.creationTimestamp')
+                    creation_sec=$(date -u -d "${creation_ts}" +"%s" 2>/dev/null || echo 0)
+
+                    age=$(( (NOW - creation_sec) / 60 ))
+                    if [ "$age" -gt 3600 ]; then
+                      echo "Deleting Application: $name (age: ${age}m)"
+                      kubectl patch app $name  -p '{"metadata": {"finalizers": ["resources-finalizer.argocd.argoproj.io"]}}' --type merge -n $NAMESPACE
+                      kubectl delete app $name -n $NAMESPACE
+
+                      app_repo_name="${name%-app-of-apps}"
+                      full_app_repo="$GH_ORG/$app_repo_name"
+
+                      gitops_repo_name="${name%-app-of-apps}-gitops"
+                      full_gitops_repo="$GH_ORG/$gitops_repo_name"
+
+                      echo "Deleting GitHub repo: $full_app_repo"
+                      curl -s -o /dev/null -w "%{http_code}" -X DELETE \
+                      -H "Authorization: token $GH_TOKEN" \
+                      -H "Accept: application/vnd.github+json" \
+                      "https://api.github.com/repos/$full_app_repo" | grep -q "204" \
+                      && echo "Deleted $full_app_repo" \
+                      || echo "Failed to delete $full_app_repo"
+
+                      echo "Deleting GitHub repo: $full_gitops_repo"
+                      curl -s -o /dev/null -w "%{http_code}" -X DELETE \
+                      -H "Authorization: token $GH_TOKEN" \
+                      -H "Accept: application/vnd.github+json" \
+                      "https://api.github.com/repos/$full_gitops_repo" | grep -q "204" \
+                      && echo "Deleted $full_gitops_repo" \
+                      || echo "Failed to delete $full_gitops_repo"
+                    else
+                      echo "found application $name. Age: $age m - skipping"
+                    fi
+                    sleep 2
+                  done
