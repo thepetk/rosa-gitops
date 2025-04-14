@@ -3,5 +3,3 @@ kind: Kustomization
 resources:
   - pruner-rbac.yaml
   - pruner-job.yaml
-
-namespace: argocd-pruner-ns
