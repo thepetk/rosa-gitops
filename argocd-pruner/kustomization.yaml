@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - pruner-job.yaml
   - pruner-rbac.yaml
+  - pruner-job.yaml
 
 namespace: argocd-pruner-ns
