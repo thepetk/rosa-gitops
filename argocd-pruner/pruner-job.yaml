@@ -41,7 +41,7 @@ spec:
                     creation_sec=$(date -u -d "${creation_ts}" +"%s" 2>/dev/null || echo 0)
 
                     age=$(( (NOW - creation_sec) / 60 ))
-                    if [ "$age" -gt 3600 ]; then
+                    if [ "$age" -gt 1440 ]; then
                       echo "Deleting Application: $name (age: ${age}m)"
                       kubectl patch app $name  -p '{"metadata": {"finalizers": ["resources-finalizer.argocd.argoproj.io"]}}' --type merge -n $NAMESPACE
                       kubectl delete app $name -n $NAMESPACE
