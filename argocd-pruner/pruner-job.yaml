@@ -25,6 +25,8 @@ spec:
                     secretKeyRef:
                       name: pruner-secrets
                       key: GITOPS_GIT_ORG
+                - name: RHDH_URL
+                  value: "http://rolling-demo-backstage-rolling-demo-ns.svc.cluster.local"
                 - name: RHDH_TOKEN
                   valueFrom:
                     secretKeyRef:
@@ -37,13 +39,12 @@ spec:
                   #!/bin/bash
 
                   NAMESPACE="openshift-gitops"
+                  LABEL_SELECTOR="backstage-name=rolling-demo"
                   NOW=$(date +%s)
 
-                  # Get applications with non-null backstage-url labels
-                  kubectl get applications.argoproj.io -n "$NAMESPACE" -o json | \
-                  jq -c '.items[] | select(.metadata.labels."backstage-url" != null)' | while read -r app; do
+                  # Get applications with the matching label
+                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.items[]' | while read -r app; do
                     name=$(echo "$app" | jq -r '.metadata.name')
-                    backstage_url=$(echo "$app" | jq -r '.metadata.labels."backstage-url"')
                     creation_ts=$(echo "$app" | jq -r '.metadata.creationTimestamp')
                     creation_sec=$(date -u -d "${creation_ts}" +"%s" 2>/dev/null || echo 0)
 
@@ -77,26 +78,26 @@ spec:
                       && echo "Deleted $full_gitops_repo" \
                       || echo "Failed to delete $full_gitops_repo"
 
-                      echo "Cleaning Backstage Components for $app_repo_name using URL: $backstage_url"
+                      echo "Cleaning Backstage Components for $app_repo_name using URL: $RHDH_URL"
                       component_response=$(curl -s -X GET \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$backstage_url/api/catalog/entities?filter=kind=component,metadata.name=$app_repo_name")
+                        "$RHDH_URL/api/catalog/entities?filter=kind=component,metadata.name=$app_repo_name")
                       component_uid=$(echo "$component_response" | jq -r '.items[0].metadata.uid // empty')
 
                       if [ -n "$component_uid" ]; then
                         echo "Deleting Backstage Component: $app_repo_name (UID: $component_uid)"
                         curl -s -X DELETE \
                           -H "Authorization: Bearer $RHDH_TOKEN" \
-                          "$backstage_url/api/catalog/entities/by-uid/$component_uid"
+                          "$RHDH_URL/api/catalog/entities/by-uid/$component_uid"
                         echo "Component deletion status: $?"
                       else
                         echo "No Backstage Component found with name: $app_repo_name"
                       fi
 
-                      echo "Cleaning Backstage Resources for $app_repo_name using URL: $backstage_url"
+                      echo "Cleaning Backstage Resources for $app_repo_name using URL: $RHDH_URL"
                       resource_response=$(curl -s -X GET \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$backstage_url/api/catalog/entities?filter=kind=resource,metadata.name=$app_repo_name")
+                        "$RHDH_URL/api/catalog/entities?filter=kind=resource,metadata.name=$app_repo_name")
 
                       resource_uid=$(echo "$resource_response" | jq -r '.items[0].metadata.uid // empty')
 
@@ -104,17 +105,17 @@ spec:
                         echo "Deleting Backstage Resource: $app_repo_name (UID: $resource_uid)"
                         curl -s -X DELETE \
                           -H "Authorization: Bearer $RHDH_TOKEN" \
-                          "$backstage_url/api/catalog/entities/by-uid/$resource_uid"
+                          "$RHDH_URL/api/catalog/entities/by-uid/$resource_uid"
                         echo "Resource deletion status: $?"
                       else
                         echo "No Backstage Resource found with name: $app_repo_name"
                       fi
 
-                      echo "Cleaning Backstage Locations for $app_repo_name using URL: $backstage_url"
+                      echo "Cleaning Backstage Locations for $app_repo_name using URL: $RHDH_URL"
                       location_app_target="https://github.com/${full_app_repo}/blob/main/catalog-info.yaml.yaml"
                       location_response=$(curl -s -X GET \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$backstage_url/api/catalog/entities?filter=kind=location")
+                        "$RHDH_URL/api/catalog/entities?filter=kind=location")
 
                       # Find location that has the target repo in its target field
                       location_uid=$(echo "$location_response" | jq -r --arg target "$location_app_target" \
@@ -124,7 +125,7 @@ spec:
                         echo "Deleting Backstage Location with target: $location_app_target (UID: $location_uid)"
                         curl -s -X DELETE \
                           -H "Authorization: Bearer $RHDH_TOKEN" \
-                          "$backstage_url/api/catalog/entities/by-uid/$location_uid"
+                          "$RHDH_URL/api/catalog/entities/by-uid/$location_uid"
                         echo "Location deletion status: $?"
                       else
                         echo "No Backstage Location found with target: $location_app_target"
