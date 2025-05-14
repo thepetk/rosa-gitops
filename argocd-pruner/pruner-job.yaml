@@ -43,7 +43,7 @@ spec:
                   NOW=$(date +%s)
 
                   # Get applications with the matching label
-                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.items[]' | while read -r app; do
+                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.[]' | while read -r app; do
                     name=$(echo "$app" | jq -r '.metadata.name')
                     creation_ts=$(echo "$app" | jq -r '.metadata.creationTimestamp')
                     creation_sec=$(date -u -d "${creation_ts}" +"%s" 2>/dev/null || echo 0)
@@ -155,7 +155,7 @@ spec:
 
                       # Find location that has the target repo in its target field
                       location_uid=$(echo "$location_response" | jq -r --arg target "$location_app_target" \
-                        '.items[] | select(.spec.target | contains($target)) | .metadata.uid // empty')
+                        '.[] | select(.spec.target | contains($target)) | .metadata.uid // empty')
 
                       if [ -n "$location_uid" ]; then
                         echo "Deleting Backstage Location with target: $location_target (UID: $location_uid)"
@@ -174,7 +174,7 @@ spec:
                       else
                         echo "No Backstage Location found with target: $location_target"
                         # Output some debug info on what locations were found
-                        echo "Locations found: $(echo "$location_response" | jq -r '.items[] | .spec.target')"
+                        echo "Locations found: $(echo "$location_response" | jq -r '.[] | .spec.target')"
                       fi
 
                     else
