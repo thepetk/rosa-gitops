@@ -148,33 +148,28 @@ spec:
                       fi
 
                       echo "Cleaning Backstage Locations for $app_repo_name using URL: $RHDH_URL"
-                      location_app_target="https://github.com/${full_app_repo}/blob/main/catalog-info.yaml.yaml"
+                      location_app_target="https://github.com/${full_app_repo}/tree/main/catalog-info.yaml"
                       location_response=$(curl -s --insecure -X GET \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$RHDH_URL/api/catalog/entities?filter=kind=location")
+                        "$RHDH_URL/api/catalog/locations")
 
                       # Find location that has the target repo in its target field
                       location_uid=$(echo "$location_response" | jq -r --arg target "$location_app_target" \
-                        '.[] | select(.spec.target | contains($target)) | .metadata.uid // empty')
+                        '.[] | select(.data.target | contains($target)) | .data.id // empty')
 
                       if [ -n "$location_uid" ]; then
                         echo "Deleting Backstage Location with target: $location_target (UID: $location_uid)"
                         delete_location_response=$(curl -s --insecure -o /dev/null -w "%{http_code}" -X DELETE \
                           -H "Authorization: Bearer $RHDH_TOKEN" \
-                          "$BACKSTAGE_URL/api/catalog/entities/by-uid/$location_uid")
+                          "$RHDH_URL/api/catalog/locations/$location_uid")
                         
                         if [ "$delete_location_response" = "204" ]; then
                           echo "Successfully deleted Backstage Location for: $location_target"
                         else
                           echo "Failed to delete Backstage Location: $location_target - HTTP status: $delete_location_response"
-                          echo "Location response details: $(curl -s --insecure -X GET \
-                            -H "Authorization: Bearer $RHDH_TOKEN" \
-                            "$BACKSTAGE_URL/api/catalog/entities/by-uid/$location_uid")"
                         fi
                       else
                         echo "No Backstage Location found with target: $location_target"
-                        # Output some debug info on what locations were found
-                        echo "Locations found: $(echo "$location_response" | jq -r '.[] | .spec.target')"
                       fi
 
                     else
