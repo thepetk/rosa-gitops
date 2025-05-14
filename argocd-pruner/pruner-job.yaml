@@ -85,10 +85,10 @@ spec:
                       -H "Accept: application/vnd.github+json" \
                       "https://api.github.com/repos/$full_gitops_repo")
 
-                      if [ "$gitops_response" = "204" ]; then
+                      if [ "$github_response" = "204" ]; then
                         echo "Successfully deleted GitHub repo: $full_gitops_repo"
                       else
-                        echo "Failed to delete GitHub repo: $full_gitops_repo - HTTP status: $gitops_response"
+                        echo "Failed to delete GitHub repo: $full_gitops_repo - HTTP status: $github_response"
                         error_details=$(curl -s -X GET \
                           -H "Authorization: token $GH_TOKEN" \
                           -H "Accept: application/vnd.github+json" \
