@@ -26,7 +26,7 @@ spec:
                       name: pruner-secrets
                       key: GITOPS_GIT_ORG
                 - name: RHDH_URL
-                  value: "http://rolling-demo-backstage-rolling-demo-ns.apps.tpetkos-aicluster01.devcluster.openshift.com"
+                  value: "https://rolling-demo-backstage-rolling-demo-ns.apps.tpetkos-aicluster01.devcluster.openshift.com"
                 - name: RHDH_TOKEN
                   valueFrom:
                     secretKeyRef:
