@@ -43,7 +43,7 @@ spec:
                   NOW=$(date +%s)
 
                   # Get applications with the matching label
-                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.[]' | while read -r app; do
+                  kubectl get applications.argoproj.io -n "$NAMESPACE" -l "$LABEL_SELECTOR" -o json | jq -c '.items[]' | while read -r app; do
                     name=$(echo "$app" | jq -r '.metadata.name')
                     creation_ts=$(echo "$app" | jq -r '.metadata.creationTimestamp')
                     creation_sec=$(date -u -d "${creation_ts}" +"%s" 2>/dev/null || echo 0)
