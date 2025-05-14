@@ -173,7 +173,7 @@ spec:
                       fi
 
                     else
-                      echo "found application $name. Age: $age m - skipping"
+                      echo "Application $name found. Skipping:: Reason - Age: $age m"
                     fi
 
                     sleep 2
