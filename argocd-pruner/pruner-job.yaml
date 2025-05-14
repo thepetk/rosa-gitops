@@ -124,7 +124,7 @@ spec:
                       echo "Cleaning Backstage Resources for $app_repo_name using URL: $RHDH_URL"
                       resource_response=$(curl -s --insecure -X GET \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$RHDH_URL/api/catalog/entities?filter=kind=resource,metadata.name=$app_repo_name")
+                        "$RHDH_URL/api/catalog/entities?filter=kind=resource,metadata.name=$app_repo_name-gitops")
 
                       resource_uid=$(echo "$resource_response" | jq -r '.[0].metadata.uid // empty')
 
