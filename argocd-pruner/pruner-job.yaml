@@ -51,7 +51,6 @@ spec:
                     backstage_response=$(curl -s --insecure -X $method \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
                         "$RHDH_URL/$uri")
-
                     echo $backstage_response
                   }
 
