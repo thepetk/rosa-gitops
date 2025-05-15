@@ -49,7 +49,7 @@ spec:
                         -H "Authorization: Bearer $RHDH_TOKEN" \
                         "$RHDH_URL/$uri")
 
-                    echo "$backstage_response"
+                    echo $backstage_response
                   }
 
                   githubRequest() {
@@ -59,7 +59,7 @@ spec:
                       -H "Authorization: token $GH_TOKEN" \
                       -H "Accept: application/vnd.github+json" \
                       "https://api.github.com/repos/$repo")
-                    echo "$github_response"
+                    echo $github_response
                   }
 
                   # Get applications with the matching label
@@ -82,7 +82,7 @@ spec:
                       gitops_repo_name="${name%-app-of-apps}-gitops"
                       full_gitops_repo="$GH_ORG/$gitops_repo_name"
 
-                      for repo in "$full_app_repo" "full_gitops_repo"; do
+                      for repo in "$full_app_repo" "$full_gitops_repo"; do
                         echo "Deleting GitHub repo: $repo"
                         github_response=$(githubRequest "$repo" "DELETE")
 
