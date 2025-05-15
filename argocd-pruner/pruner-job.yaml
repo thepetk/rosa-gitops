@@ -48,11 +48,20 @@ spec:
                   backstageRequest() {
                     uri=$1
                     method=$2
-                    backstage_response=$(curl -s --insecure -w "%{http_code}" -X $method \
+                    backstage_response=$(curl -s --insecure -X $method \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
                         "$RHDH_URL/$uri")
 
-                    echo "$backstage_response"
+                    echo $backstage_response
+                  }
+
+                  backstageRequestStatus() {
+                    uri=$1
+                    method=$2
+                    backstage_response=$(curl -s --insecure -o /dev/null -w "%{http_code}" -X $method \
+                        -H "Authorization: Bearer $RHDH_TOKEN" \
+                        "$RHDH_URL/$uri")
+                    echo $backstage_response
                   }
 
                   githubRequest() {
@@ -62,7 +71,7 @@ spec:
                       -H "Authorization: token $GH_TOKEN" \
                       -H "Accept: application/vnd.github+json" \
                       "https://api.github.com/repos/$repo")
-                    echo "$github_response"
+                    echo $github_response
                   }
 
                   # Get applications with the matching label
@@ -85,7 +94,7 @@ spec:
                       gitops_repo_name="${name%-app-of-apps}-gitops"
                       full_gitops_repo="$GH_ORG/$gitops_repo_name"
 
-                      for repo in "$full_app_repo" "full_gitops_repo"; do
+                      for repo in "$full_app_repo" "$full_gitops_repo"; do
                         echo "Deleting GitHub repo: $repo"
                         github_response=$(githubRequest "$repo" "DELETE")
 
@@ -104,7 +113,7 @@ spec:
 
                       if [ -n "$component_uid" ]; then
                         echo "Deleting Backstage Component: $app_repo_name (UID: $component_uid)"
-                        delete_component_response=$(backstageRequest "api/catalog/entities/by-uid/$component_uid" "DELETE")
+                        delete_component_response=$(backstageRequestStatus "api/catalog/entities/by-uid/$component_uid" "DELETE")
 
                         if [ "$delete_component_response" = "204" ]; then
                           echo "Successfully deleted Backstage Component: $app_repo_name"
@@ -123,7 +132,7 @@ spec:
 
                       if [ -n "$resource_uid" ]; then
                         echo "Deleting Backstage Resource: $app_repo_name (UID: $resource_uid)"
-                        delete_resource_response=$(backstageRequest "api/catalog/entities/by-uid/$resource_uid" "DELETE")
+                        delete_resource_response=$(backstageRequestStatus "api/catalog/entities/by-uid/$resource_uid" "DELETE")
                         
                         if [ "$delete_resource_response" = "204" ]; then
                           echo "Successfully deleted Backstage Resource: $app_repo_name"
@@ -148,7 +157,7 @@ spec:
 
                         if [ -n "$location_uid" ]; then
                           echo "Deleting Backstage Location with target: $location_target (UID: $location_uid)"
-                          delete_location_response=$(backstageRequest "api/catalog/locations/$location_uid" "DELETE")
+                          delete_location_response=$(backstageRequestStatus "api/catalog/locations/$location_uid" "DELETE")
                           if [ "$delete_location_response" = "204" ]; then
                             echo "Successfully deleted Backstage Location for: $location_target"
                           else
