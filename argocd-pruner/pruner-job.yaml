@@ -55,9 +55,10 @@ spec:
                   backstageRequestStatus() {
                     uri=$1
                     method=$2
-                    curl -s --insecure -o /dev/null -w "%{http_code}" -X $method \
+                    backstage_response=$(curl -s --insecure -o /dev/null -w "%{http_code}" -X $method \
                         -H "Authorization: Bearer $RHDH_TOKEN" \
-                        "$RHDH_URL/$uri"
+                        "$RHDH_URL/$uri")
+                    echo $backstage_response
                   }
 
                   githubRequest() {
