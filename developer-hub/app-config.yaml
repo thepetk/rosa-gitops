@@ -68,9 +68,10 @@ data:
             - allow: [Location, Template]
     lightspeed:
       servers:
-      - id: 'ollama-server'
+      - id: team_cluster
         url: "${OLLAMA_URL}"
         token: "${OLLAMA_TOKEN}"
+        type: "openai"
     permission:
       enabled: true
       rbac:

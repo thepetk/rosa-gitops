@@ -21,3 +21,44 @@ spec:
       enabled: true
   database:
     enableLocalDb: true
+  deployment:
+    patch:
+      spec:
+        template:
+          spec:
+            containers:
+              - env:
+                  - name: PROJECT
+                    value: rhdh
+                  - name: RCS_CONFIG_FILE
+                    value: /app-root/config/rcsconfig.yaml
+                  - name: RHDH_CONFIG_FILE
+                    value: /app-root/config/app-config-rhdh.yaml
+                envFrom:
+                  - secretRef:
+                      name: team-cluster-key
+                  - secretRef:
+                      name: secrets-rhdh
+                image: 'quay.io/redhat-ai-dev/road-core-service:latest'
+                name: road-core-sidecar
+                ports:
+                  - containerPort: 8080
+                    name: rcs-backend
+                    protocol: TCP
+                volumeMounts:
+                  - mountPath: /app-root/config/rcsconfig.yaml
+                    name: rcsconfig
+                    subPath: rcsconfig.yaml
+                  - mountPath: /app-root/config/team-cluster-key/team_cluster_key.txt
+                    name: openai
+                    subPath: team_cluster_key.txt
+                  - mountPath: /app-root/config/app-config-rhdh.yaml
+                    name: app-config-rhdh
+                    subPath: app-config-rhdh.yaml
+            volumes:
+              - configMap:
+                  name: rcsconfig
+                name: rcsconfig
+              - name: openai
+                secret:
+                  secretName: team-cluster-key
