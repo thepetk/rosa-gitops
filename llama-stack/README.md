@@ -8,3 +8,4 @@ Before deploying this application, a secret, `llama-stack-secret` must exist in 
 
 - `OLLAMA_URL`: The hostname of the Ollama instance
 - `OLLAMA_API_TOKEN`: An API key used to access the Ollama instance (if needed)
+- `INFERENCE_MODEL`: The model used by Llama stack instance
