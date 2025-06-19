@@ -42,6 +42,13 @@ data:
       baseUrl: "${RHDH_BASE_URL}"
       cors:
         origin: "${RHDH_BASE_URL}"
+      csp:
+        upgrade-insecure-requests: false
+        img-src:
+          - "'self'"
+          - "data:"
+          - https://img.freepik.com
+          - https://cdn.dribbble.com
     signInPage: oidc
     catalog:
       providers:
