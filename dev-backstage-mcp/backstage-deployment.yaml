@@ -30,15 +30,16 @@ spec:
                 name: keycloak-secrets
             - secretRef:
                 name: github-secrets
+          args:
+            - '--config'
+            - '/app/config/app-config.yaml'
+            - '--config'
+            - '/app/plugins/dynamic-plugins.yaml'
           volumeMounts:
             - name: app-config
-              mountPath: /app/app-config.yaml
-              subPath: app-config.yaml
-              readOnly: true
+              mountPath: /app/config
             - name: dynamic-plugins-config
-              mountPath: /app/dynamic-plugins.yaml
-              subPath: dynamic-plugins.yaml
-              readOnly: true
+              mountPath: /app/plugins
           readinessProbe:
             httpGet:
               port: 7007
