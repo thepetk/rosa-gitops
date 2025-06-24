@@ -7,7 +7,5 @@ resources:
   - postgres-deployment.yaml
   - postgres-pvc.yaml
   - postgres-service.yaml
-  - rhdh-rbac-policy.yaml
-  - pvc.yaml
 
 namespace: dev-backstage-mcp
