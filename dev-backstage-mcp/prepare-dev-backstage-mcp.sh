@@ -63,28 +63,12 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 echo "OK"
 
-SECRET_NAME="kubernetes-secrets"
-echo -n "* $SECRET_NAME secret: "
-kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
-    --from-literal=K8S_CLUSTER_TOKEN="$K8S_CLUSTER_TOKEN" \
-    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-echo "OK"
-
 SECRET_NAME="postgres-secrets"
 echo -n "* $SECRET_NAME secret: "
 kubectl create secret generic "$SECRET_NAME" \
     --namespace="$RHDH_NAMESPACE" \
     --from-literal=POSTGRES_USER="$POSTGRES_USER" \
     --from-literal=POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
-    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-echo "OK"
-
-SECRET_NAME="quay-pull-secret"
-echo -n "* $SECRET_NAME secret: "
-kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
-    --from-literal=.dockerconfigjson="$QUAY_DOCKERCONFIGJSON" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 echo "OK"
 
@@ -109,14 +93,5 @@ kubectl create secret generic "$SECRET_NAME" \
     --from-literal=ADMIN_TOKEN="$RHDH_SA_TOKEN" \
     --from-literal=RHDH_BASE_URL="$RHDH_BASE_URL" \
     --from-literal=RHDH_CALLBACK_URL="$RHDH_CALLBACK_URL" \
-    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-echo "OK"
-
-SECRET_NAME="ai-rh-developer-hub-env"
-echo -n "* $SECRET_NAME secret: "
-kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
-    --from-literal=NODE_TLS_REJECT_UNAUTHORIZED="0" \
-    --from-literal=RHDH_TOKEN="$RHDH_SA_TOKEN" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 echo "OK"

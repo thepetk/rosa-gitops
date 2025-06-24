@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-backstage-mcp
+  namespace: openshift-gitops
+  finalizers: ["resources-finalizer.argocd.argoproj.io"]
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/thepetk/rosa-gitops.git
+    targetRevision: main
+    path: ./dev-backstage-mcp
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-backstage-mcp
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        argocd.argoproj.io/managed-by: openshift-gitops
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
