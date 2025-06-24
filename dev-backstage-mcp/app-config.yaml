@@ -1,0 +1,59 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: backstage-app-config
+data:
+  app-config-rhdh.yaml: |
+    app:
+      title: Backstage Dev MCP Instance
+      baseUrl: "${RHDH_BASE_URL}"
+    auth:
+      environment: production
+      session:
+        secret: "${BACKEND_SECRET}"
+      providers:
+        github:
+          production:
+            clientId: "${CLIENT_ID}"
+            clientSecret: "${CLIENT_SECRET}"
+        oidc:
+          production:
+            metadataUrl: "${KEYCLOAK_METADATA_URL}"
+            clientId: "${KEYCLOAK_CLIENT_ID}"
+            clientSecret: "${KEYCLOAK_CLIENT_SECRET}"
+            callbackUrl: "${RHDH_CALLBACK_URL}"
+            prompt: auto
+            signIn:
+              resolvers:
+                - resolver: preferredUsernameMatchingUserEntityName
+    backend:
+      auth:
+        externalAccess:
+          - type: static
+            options:
+              token: ${ADMIN_TOKEN}
+              subject: admin-curl-access
+        keys:
+          - secret: "${BACKEND_SECRET}"
+      baseUrl: "${RHDH_BASE_URL}"
+      cors:
+        origin: "${RHDH_BASE_URL}"
+    signInPage: oidc
+    catalog:
+      providers:
+        keycloakOrg:
+          default:
+            baseUrl: "${KEYCLOAK_BASE_URL}"
+            loginRealm: "${KEYCLOAK_REALM}"
+            realm: "${KEYCLOAK_REALM}"
+            clientId: "${KEYCLOAK_CLIENT_ID}"
+            clientSecret: "${KEYCLOAK_CLIENT_SECRET}"
+            schedule:
+              frequency: { minutes: 1 }
+              timeout: { minutes: 1 }
+              initialDelay: { seconds: 15 }
+            signIn:
+              resolvers:
+                - resolver: emailMatchingUserEntityProfileEmail
+      rules:
+          - allow: [Component, Group, User, Resource, Location, API]
