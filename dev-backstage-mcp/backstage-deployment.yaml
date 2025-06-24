@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  namespace: dev-backstage-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+  template:
+    metadata:
+      labels:
+        app: backstage
+    spec:
+      containers:
+        - name: backstage
+          resources: {}
+          image: quay.io/tpetkos/backstage:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7007
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+            - secretRef:
+                name: backstage-secrets
+          volumeMounts:
+            - name: app-config
+              mountPath: /app/app-config.yaml
+              subPath: app-config.yaml
+              readOnly: true
+            - name: dynamic-plugins-config
+              mountPath: /app/dynamic-plugins.yaml
+              subPath: dynamic-plugins.yaml
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              port: 7007
+              path: /healthcheck
+          livenessProbe:
+            httpGet:
+              port: 7007
+              path: /healthcheck
+      volumes:
+        - name: app-config
+          configMap:
+            name: backstage-app-config
+        - name: dynamic-plugins-config
+          configMap:
+            name: backstage-dynamic-plugins
