@@ -4,8 +4,5 @@ resources:
   - backstage-deployment.yaml
   - app-config.yaml
   - dynamic-plugins.yaml
-  - postgres-deployment.yaml
-  - postgres-pvc.yaml
-  - postgres-service.yaml
 
 namespace: dev-backstage-mcp

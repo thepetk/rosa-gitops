@@ -36,6 +36,9 @@ data:
         keys:
           - secret: "${BACKEND_SECRET}"
       baseUrl: "${RHDH_BASE_URL}"
+      database:
+        client: better-sqlite3
+        connection: ':memory:'
       cors:
         origin: "${RHDH_BASE_URL}"
     signInPage: oidc
