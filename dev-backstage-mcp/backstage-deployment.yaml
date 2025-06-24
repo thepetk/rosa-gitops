@@ -23,13 +23,13 @@ spec:
               containerPort: 7007
           envFrom:
             - secretRef:
-              name: postgres-secrets
+                name: postgres-secrets
             - secretRef:
-              name: backstage-secrets
+                name: backstage-secrets
             - secretRef:
-              name: keycloak-secrets
+                name: keycloak-secrets
             - secretRef:
-              name: github-secrets
+                name: github-secrets
           volumeMounts:
             - name: app-config
               mountPath: /app/app-config.yaml
