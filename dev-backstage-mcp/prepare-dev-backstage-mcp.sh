@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Constants
-RHDH_NAMESPACE="dev-backstage-mcp"
-ARGOCD_NAMESPACE="openshift-gitops"
-PAC_NAMESPACE="openshift-pipelines"
+BACKSTAGE_NAMESPACE="dev-backstage-mcp"
 
 # Source the private env and check if all env vars
 # have been set
@@ -16,7 +14,7 @@ ENV_VARS=(
   "GITHUB_APP_WEBHOOK_SECRET" \
   "GITHUB_APP_PRIVATE_KEY" \
   "BACKEND_SECRET" \
-  "RHDH_CALLBACK_URL" \
+  "BACKSTAGE_CALLBACK_URL" \
   "POSTGRES_USER" \
   "POSTGRES_PASSWORD" \
   "QUAY_DOCKERCONFIGJSON" \
@@ -35,25 +33,22 @@ for ENV_VAR in "${ENV_VARS[@]}"; do
 done
 
 # Create project if does not exist
-echo "Creating new project for $RHDH_NAMESPACE if it doesn't exist.."
-oc new-project $RHDH_NAMESPACE
+echo "Creating new project for $BACKSTAGE_NAMESPACE if it doesn't exist.."
+oc new-project $BACKSTAGE_NAMESPACE
 echo "OK"
 
 # Create the necessary ServiceAccount token
-echo "Creating the k8s sa token.."
-kubectl create serviceaccount k8s-sa -n $RHDH_NAMESPACE
-kubectl create serviceaccount rhdh-sa -n $RHDH_NAMESPACE
-kubectl create rolebinding k8s-admin-binding   --clusterrole=admin   --serviceaccount=$RHDH_NAMESPACE:k8s-sa   --namespace=$RHDH_NAMESPACE
-K8S_CLUSTER_TOKEN=$(kubectl create token k8s-sa -n $RHDH_NAMESPACE --duration 8760h)
-RHDH_SA_TOKEN=$(kubectl create token rhdh-sa -n $RHDH_NAMESPACE)
+echo "Creating the backstage admin token.."
+kubectl create serviceaccount backstage-sa -n $BACKSTAGE_NAMESPACE
+RHDH_SA_TOKEN=$(kubectl create token backstage-sa -n $BACKSTAGE_NAMESPACE)
 echo "OK"
 
-##### Create all the secrets necessary for the deployment of RHDH ######
-echo "Setting up secrets on $RHDH_NAMESPACE and $PAC_NAMESPACE"
+##### Create all the secrets necessary for the deployment of backstage ######
+echo "Setting up secrets on $BACKSTAGE_NAMESPACE"
 SECRET_NAME="github-secrets"
 echo -n "* $SECRET_NAME secret: "
 kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
+    --namespace="$BACKSTAGE_NAMESPACE" \
     --from-literal=GITHUB_APP_APP_ID="$GITHUB_APP_APP_ID" \
     --from-literal=GITHUB_APP_CLIENT_ID="$GITHUB_APP_CLIENT_ID" \
     --from-literal=GITHUB_APP_CLIENT_SECRET="$GITHUB_APP_CLIENT_SECRET" \
@@ -66,7 +61,7 @@ echo "OK"
 SECRET_NAME="postgres-secrets"
 echo -n "* $SECRET_NAME secret: "
 kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
+    --namespace="$BACKSTAGE_NAMESPACE" \
     --from-literal=POSTGRES_USER="$POSTGRES_USER" \
     --from-literal=POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
@@ -75,7 +70,7 @@ echo "OK"
 SECRET_NAME="keycloak-secrets"
 echo -n "* $SECRET_NAME secret: "
 kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
+    --namespace="$BACKSTAGE_NAMESPACE" \
     --from-literal=KEYCLOAK_METADATA_URL="$KEYCLOAK_METADATA_URL" \
     --from-literal=KEYCLOAK_CLIENT_ID="$KEYCLOAK_CLIENT_ID" \
     --from-literal=KEYCLOAK_REALM="$KEYCLOAK_REALM" \
@@ -88,10 +83,10 @@ echo "OK"
 SECRET_NAME="backstage-secrets"
 echo -n "* $SECRET_NAME secret: "
 kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
+    --namespace="$BACKSTAGE_NAMESPACE" \
     --from-literal=BACKEND_SECRET="$BACKEND_SECRET" \
     --from-literal=ADMIN_TOKEN="$RHDH_SA_TOKEN" \
-    --from-literal=RHDH_BASE_URL="$RHDH_BASE_URL" \
-    --from-literal=RHDH_CALLBACK_URL="$RHDH_CALLBACK_URL" \
+    --from-literal=BACKSTAGE_BASE_URL="$BACKSTAGE_BASE_URL" \
+    --from-literal=BACKSTAGE_CALLBACK_URL="$BACKSTAGE_CALLBACK_URL" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 echo "OK"

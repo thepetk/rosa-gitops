@@ -6,7 +6,7 @@ data:
   app-config-rhdh.yaml: |
     app:
       title: Backstage Dev MCP Instance
-      baseUrl: "${RHDH_BASE_URL}"
+      baseUrl: "${BACKSTAGE_BASE_URL}"
     auth:
       environment: production
       session:
@@ -21,7 +21,7 @@ data:
             metadataUrl: "${KEYCLOAK_METADATA_URL}"
             clientId: "${KEYCLOAK_CLIENT_ID}"
             clientSecret: "${KEYCLOAK_CLIENT_SECRET}"
-            callbackUrl: "${RHDH_CALLBACK_URL}"
+            callbackUrl: "${BACKSTAGE_CALLBACK_URL}"
             prompt: auto
             signIn:
               resolvers:
@@ -35,12 +35,12 @@ data:
               subject: admin-curl-access
         keys:
           - secret: "${BACKEND_SECRET}"
-      baseUrl: "${RHDH_BASE_URL}"
+      baseUrl: "${BACKSTAGE_BASE_URL}"
       database:
         client: better-sqlite3
         connection: ':memory:'
       cors:
-        origin: "${RHDH_BASE_URL}"
+        origin: "${BACKSTAGE_BASE_URL}"
     signInPage: oidc
     catalog:
       providers:
