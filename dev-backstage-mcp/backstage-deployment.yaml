@@ -30,11 +30,6 @@ spec:
                 name: keycloak-secrets
             - secretRef:
                 name: github-secrets
-          args:
-            - '--config'
-            - '/app/config/app-config.yaml'
-            - '--config'
-            - '/app/plugins/dynamic-plugins.yaml'
           volumeMounts:
             - name: app-config
               mountPath: /app/config
