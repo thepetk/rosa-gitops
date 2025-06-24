@@ -18,6 +18,8 @@ spec:
           resources: {}
           image: quay.io/tpetkos/backstage:latest
           imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command: ["node", "packages/backend"]
           ports:
             - name: http
               containerPort: 7007
