@@ -15,8 +15,6 @@ ENV_VARS=(
   "GITHUB_APP_PRIVATE_KEY" \
   "BACKEND_SECRET" \
   "BACKSTAGE_CALLBACK_URL" \
-  "POSTGRES_USER" \
-  "POSTGRES_PASSWORD" \
   "QUAY_DOCKERCONFIGJSON" \
   "KEYCLOAK_METADATA_URL" \
   "KEYCLOAK_CLIENT_ID" \
@@ -55,15 +53,6 @@ kubectl create secret generic "$SECRET_NAME" \
     --from-literal=GITHUB_APP_WEBHOOK_URL="$GITHUB_APP_WEBHOOK_URL" \
     --from-literal=GITHUB_APP_WEBHOOK_SECRET="$GITHUB_APP_WEBHOOK_SECRET" \
     --from-literal=GITHUB_APP_PRIVATE_KEY="$GITHUB_APP_PRIVATE_KEY" \
-    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-echo "OK"
-
-SECRET_NAME="postgres-secrets"
-echo -n "* $SECRET_NAME secret: "
-kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$BACKSTAGE_NAMESPACE" \
-    --from-literal=POSTGRES_USER="$POSTGRES_USER" \
-    --from-literal=POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 echo "OK"
 
