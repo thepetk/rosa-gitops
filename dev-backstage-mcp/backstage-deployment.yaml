@@ -13,8 +13,13 @@ spec:
       labels:
         app: backstage
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: backstage
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
           resources: {}
           image: quay.io/tpetkos/backstage:1.40.2
           imagePullPolicy: Always
