@@ -13,8 +13,6 @@ spec:
       labels:
         app: backstage
     spec:
-      securityContext:
-        fsGroup: 1000
       containers:
         - name: backstage
           securityContext:
