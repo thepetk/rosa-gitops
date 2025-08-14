@@ -80,8 +80,8 @@ spec:
           configMap:
             name: app-config-rhdh
             items:
-              - key: app-config.yaml
-                path: app-config.yaml
+              - key:  app-config-rhdh.yaml
+                path:  app-config-rhdh.yaml
         - name: dynamic-plugins-config
           configMap:
             name: dynamic-plugins-rhdh
