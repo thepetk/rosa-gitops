@@ -1,12 +1,16 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: backstage-app-config
+  name: app-config-rhdh
+  labels:
+    rhdh.redhat.com/ext-config-sync: 'true'
+  annotations:
+    rhdh.redhat.com/backstage-name: developer-hub
 data:
   app-config-rhdh.yaml: |
     app:
-      title: Backstage Dev MCP Instance
-      baseUrl: "${BACKSTAGE_BASE_URL}"
+      title: AI Dev Developer Hub
+      baseUrl: "${RHDH_BASE_URL}"
     auth:
       environment: production
       session:
@@ -21,7 +25,7 @@ data:
             metadataUrl: "${KEYCLOAK_METADATA_URL}"
             clientId: "${KEYCLOAK_CLIENT_ID}"
             clientSecret: "${KEYCLOAK_CLIENT_SECRET}"
-            callbackUrl: "${BACKSTAGE_CALLBACK_URL}"
+            callbackUrl: "${RHDH_CALLBACK_URL}"
             prompt: auto
             signIn:
               resolvers:
@@ -35,12 +39,16 @@ data:
               subject: admin-curl-access
         keys:
           - secret: "${BACKEND_SECRET}"
-      baseUrl: "${BACKSTAGE_BASE_URL}"
-      database:
-        client: better-sqlite3
-        connection: ':memory:'
+      baseUrl: "${RHDH_BASE_URL}"
       cors:
-        origin: "${BACKSTAGE_BASE_URL}"
+        origin: "${RHDH_BASE_URL}"
+      csp:
+        upgrade-insecure-requests: false
+        img-src:
+          - "'self'"
+          - "data:"
+          - https://img.freepik.com
+          - https://cdn.dribbble.com
     signInPage: oidc
     catalog:
       providers:
@@ -59,4 +67,23 @@ data:
               resolvers:
                 - resolver: emailMatchingUserEntityProfileEmail
       rules:
-          - allow: [Component, Group, User, Resource, Location, API]
+          - allow: [Component, Group, User, Resource, Location, Template, API]
+      locations:
+        - type: url
+          target: https://github.com/redhat-ai-dev/ai-lab-template/blob/main/all.yaml
+          rules:
+            - allow: [Location, Template]
+    lightspeed:
+      servers:
+      - id: team_cluster
+        url: "${OLLAMA_URL}"
+        token: "${OLLAMA_TOKEN}"
+        type: "openai"
+    permission:
+      enabled: true
+      rbac:
+        policies-csv-file: ./rbac-policy.csv
+        policyFileReload: true
+        admin:
+          users:
+            - name: user:default/jcollier
