@@ -4,5 +4,6 @@ resources:
   - backstage.yaml
   - app-config.yaml
   - dynamic-plugins.yaml
+  - rcsconfig.yaml
 
 namespace: dev-backstage-mcp
