@@ -1,13 +1,13 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: app-config
+  name: app-config-rhdh
   labels:
     rhdh.redhat.com/ext-config-sync: 'true'
   annotations:
     rhdh.redhat.com/backstage-name: developer-hub
 data:
-  app-config.yaml: |
+  app-config-rhdh.yaml: |
     app:
       title: AI Dev Developer Hub
       baseUrl: "${RHDH_BASE_URL}"
