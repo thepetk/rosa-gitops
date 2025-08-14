@@ -33,10 +33,11 @@ spec:
             - secretRef:
                 name: lightspeed-secrets
           volumeMounts:
-            - name: app-config-rhdh
-              mountPath: /app/config
+            - name: app-config
+              mountPath: /opt/app-root/src/app-config.yaml
+              subPath: app-config.yaml
             - name: dynamic-plugins-config
-              mountPath: /app/plugins
+              mountPath: /opt/app-root/src/dynamic-plugins-root
           readinessProbe:
             httpGet:
               port: 7007
@@ -75,6 +76,12 @@ spec:
               name: app-config-rhdh
               subPath: app-config-rhdh.yaml
       volumes:
+        - name: app-config
+          configMap:
+            name: app-config-rhdh
+            items:
+              - key: app-config.yaml
+                path: app-config.yaml
         - name: dynamic-plugins-config
           configMap:
             name: dynamic-plugins-rhdh
@@ -84,6 +91,3 @@ spec:
         - name: openai
           secret:
             secretName: team-cluster-key
-        - name: app-config-rhdh
-          configMap:
-            name: app-config-rhdh
