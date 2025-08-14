@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: allow-rhdh-cr
+  namespace: dev-backstage-mcp
+rules:
+- apiGroups: ["rhdh.redhat.com"]
+  resources: ["backstages"]
+  verbs: ["get","list","watch","create","update","patch","delete"]
+- apiGroups: ["rhdh.redhat.com"]
+  resources: ["backstages/status","backstages/finalizers"]
+  verbs: ["get","update","patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: openshift-gitops-can-manage-rhdh
+  namespace: dev-backstage-mcp
+subjects:
+- kind: ServiceAccount
+  name: openshift-gitops-argocd-application-controller
+  namespace: openshift-gitops
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: allow-rhdh-cr
