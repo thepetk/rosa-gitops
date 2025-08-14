@@ -73,7 +73,7 @@ spec:
               name: openai
               subPath: team_cluster_key.txt
             - mountPath: /app-root/config/app-config-rhdh.yaml
-              name: app-config-rhdh
+              name: app-config
               subPath: app-config-rhdh.yaml
       volumes:
         - name: app-config
