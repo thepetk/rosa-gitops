@@ -1,0 +1,69 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rhdh-rbac-policy
+  labels:
+    rhdh.redhat.com/ext-config-sync: 'true'
+  annotations:
+    rhdh.redhat.com/backstage-name: developer-hub
+data:
+  rbac-policy.csv: |
+    p, role:default/rhdhpai-users, lightspeed.conversations.read, read, allow
+    p, role:default/rhdhpai-users, lightspeed.conversations.create, create, allow
+    p, role:default/rhdhpai-users, lightspeed.conversations.delete, delete, allow
+
+    p, role:default/rhdhpai-users, catalog-entity, read, allow
+    p, role:default/rhdhpai-users, catalog-entity, update, allow
+    p, role:default/rhdhpai-users, catalog-entity, delete, allow
+    p, role:default/rhdhpai-users, catalog.location.read, read, allow
+    p, role:default/rhdhpai-users, catalog.location.create, create, allow
+    p, role:default/rhdhpai-users, catalog.location.delete, delete, allow
+    p, role:default/rhdhpai-users, catalog.entity.create, create, allow
+    p, role:default/rhdhpai-users, scaffolder-template, read, allow
+    p, role:default/rhdhpai-users, scaffolder.task.read, read, allow
+    p, role:default/rhdhpai-users, scaffolder.task.create, create, allow
+
+    g, user:default/afred, role:default/rhdhpai-users
+    g, user:default/bsutter, role:default/rhdhpai-users
+    g, user:default/bwilcock, role:default/rhdhpai-users
+    g, user:default/coreydaley, role:default/rhdhpai-users
+    g, user:default/esapram, role:default/rhdhpai-users
+    g, user:default/eyuen, role:default/rhdhpai-users
+    g, user:default/gmontero, role:default/rhdhpai-users
+    g, user:default/hiramchirino, role:default/rhdhpai-users
+    g, user:default/hushaik, role:default/rhdhpai-users
+    g, user:default/jcollier, role:default/rhdhpai-users
+    g, user:default/jdubrick, role:default/rhdhpai-users
+    g, user:default/jrichter, role:default/rhdhpai-users
+    g, user:default/jtest, role:default/rhdhpai-users
+    g, user:default/junzhang, role:default/rhdhpai-users
+    g, user:default/kjeeyar, role:default/rhdhpai-users
+    g, user:default/kkanova, role:default/rhdhpai-users
+    g, user:default/kmarchan, role:default/rhdhpai-users
+    g, user:default/lhaim, role:default/rhdhpai-users
+    g, user:default/llyman, role:default/rhdhpai-users
+    g, user:default/mariggan, role:default/rhdhpai-users
+    g, user:default/mfaisal, role:default/rhdhpai-users
+    g, user:default/mleonova, role:default/rhdhpai-users
+    g, user:default/mshaksho, role:default/rhdhpai-users
+    g, user:default/mvaldron, role:default/rhdhpai-users
+    g, user:default/nthoen, role:default/rhdhpai-users
+    g, user:default/priyankaabel, role:default/rhdhpai-users
+    g, user:default/rorai, role:default/rhdhpai-users
+    g, user:default/shirshbe, role:default/rhdhpai-users
+    g, user:default/testuser-no-google, role:default/rhdhpai-users
+    g, user:default/tma, role:default/rhdhpai-users
+    g, user:default/tpetkos, role:default/rhdhpai-users
+    g, user:default/vincetsugranes, role:default/rhdhpai-users
+    g, user:default/yangcao, role:default/rhdhpai-users
+    g, user:default/ygalanti, role:default/rhdhpai-users
+    g, user:default/yxing, role:default/rhdhpai-users
+    g, user:default/erwangranger, role:default/rhdhpai-users
+    g, user:default/catherineweeks, role:default/rhdhpai-users
+    g, user:default/beaumorley, role:default/rhdhpai-users
+    g, user:default/lucasyoon, role:default/rhdhpai-users
+    g, user:default/preetichandrashekar, role:default/rhdhpai-users
+
+    p, role:default/template-executers, scaffolder.action.execute, use, allow
+    g, user:default/mfaisal, role:default/template-executers
+    g, user:default/jcollier, role:default/template-executers
