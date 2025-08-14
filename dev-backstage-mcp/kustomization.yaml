@@ -6,5 +6,6 @@ resources:
   - dynamic-plugins.yaml
   - rcsconfig.yaml
   - rbac.yaml
+  - rhdh-rbac-policy.yaml
 
 namespace: dev-backstage-mcp
