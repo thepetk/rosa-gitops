@@ -13,6 +13,32 @@ spec:
       labels:
         app: developer-hub
     spec:
+      initContainers:
+        - name: install-dynamic-plugins
+          image: node:20-alpine
+          command: ["/bin/sh","-lc"]
+          env:
+            # space-separated npm specs or tarball URLs
+            - name: PLUGINS
+              value: >
+                @backstage/plugin-catalog-backend-module-github@latest
+                @backstage-community/plugin-quay@latest
+          volumeMounts:
+            - name: dynamic-plugins-root
+              mountPath: /opt/app-root/src/dynamic-plugins-root
+          # simple installer: npm pack + extract into per-plugin dirs
+          args:
+            - |
+              set -euo pipefail
+              cd /opt/app-root/src/dynamic-plugins-root
+              for P in $PLUGINS; do
+                echo "==> Installing $P"
+                TARBALL=$(npm pack "$P" | tail -n1)
+                DIR=$(basename "$TARBALL" .tgz)
+                mkdir -p "$DIR"
+                tar -xzf "$TARBALL" -C "$DIR" --strip-components=1
+                rm -f "$TARBALL"
+              done
       containers:
         - name: backstage
           resources: {}
@@ -34,9 +60,12 @@ spec:
                 name: lightspeed-secrets
           volumeMounts:
             - name: app-config
-              mountPath: /opt/app-root/src/app-config-rhdh.yaml
-              subPath: app-config-rhdh.yaml
+              mountPath: /opt/app-root/src/app-config.yaml
+              subPath: app-config.yaml
             - name: dynamic-plugins-config
+              mountPath: /opt/app-root/src/dynamic-plugins.yaml
+              subPath: dynamic-plugins.yaml
+            - name: dynamic-plugins-root
               mountPath: /opt/app-root/src/dynamic-plugins-root
           readinessProbe:
             httpGet:
@@ -80,13 +109,18 @@ spec:
       volumes:
         - name: app-config
           configMap:
-            name: app-config
+            name: app-config-rhdh
             items:
-              - key:  app-config.yaml
-                path:  app-config.yaml
+              - key: app-config.yaml
+                path: app-config.yaml
         - name: dynamic-plugins-config
           configMap:
             name: dynamic-plugins-rhdh
+            items:
+              - key: dynamic-plugins.yaml
+                path: dynamic-plugins.yaml
+        - name: dynamic-plugins-root
+          emptyDir: {}
         - name: rcsconfig
           configMap:
             name: rcsconfig
