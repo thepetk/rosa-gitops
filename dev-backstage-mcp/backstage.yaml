@@ -4,7 +4,7 @@ metadata:
   name: dev-backstage-mcp
 spec:
   application:
-    image: 
+    image: quay.io/rhdh/rhdh-hub-rhel9:1.8
     appConfig:
       configMaps:
         - name: app-config-rhdh
