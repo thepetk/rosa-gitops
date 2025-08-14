@@ -34,8 +34,8 @@ spec:
                 name: lightspeed-secrets
           volumeMounts:
             - name: app-config
-              mountPath: /opt/app-root/src/app-config.yaml
-              subPath: app-config.yaml
+              mountPath: /opt/app-root/src/app-config-rhdh.yaml
+              subPath: app-config-rhdh.yaml
             - name: dynamic-plugins-config
               mountPath: /opt/app-root/src/dynamic-plugins-root
           readinessProbe:
