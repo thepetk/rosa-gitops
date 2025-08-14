@@ -44,6 +44,8 @@ spec:
                       name: team-cluster-key
                   - secretRef:
                       name: rhdh-secrets
+                  - secretRef:
+                      name: lightspeed-secrets
                 image: 'quay.io/redhat-ai-dev/road-core-service:latest'
                 name: road-core-sidecar
                 ports:
