@@ -16,10 +16,6 @@ data:
       session:
         secret: "${BACKEND_SECRET}"
       providers:
-        github:
-          production:
-            clientId: "${CLIENT_ID}"
-            clientSecret: "${CLIENT_SECRET}"
         oidc:
           production:
             metadataUrl: "${KEYCLOAK_METADATA_URL}"
