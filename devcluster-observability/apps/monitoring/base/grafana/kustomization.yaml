@@ -10,3 +10,4 @@ resources:
   - grafana-folder.yaml
   - grafana-dashboard-rhoai-models-registry.yaml
   - grafana-dashboard-rolling-demo.yaml
+  - grafana-dashboard-lightspeed-stack.yaml

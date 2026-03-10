@@ -4,3 +4,4 @@ resources:
   - rolling-demo-servicemonitor.yaml
   - rolling-demo-prometheus-rules.yaml
   - alertmanager-config.yaml
+  - podmonitor-lightspeed-stack.yaml
