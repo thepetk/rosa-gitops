@@ -15,4 +15,4 @@ spec:
     - port: lcs-backend
       path: /metrics
       interval: 30s
-      scheme: HTTP
+      scheme: http
