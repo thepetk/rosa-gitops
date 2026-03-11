@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/redhat-ai-dev/rosa-gitops.git
-    targetRevision: HEAD
+    repoURL: https://github.com/thepetk/rosa-gitops.git
+    targetRevision: feat/add_lscore_dashboard
     path: devcluster-observability/apps/monitoring/overlays/dev
   destination:
     server: https://kubernetes.default.svc
