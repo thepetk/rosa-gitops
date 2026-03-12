@@ -5,6 +5,20 @@ metadata:
   namespace: rolling-demo-ns
 spec:
   groups:
+    - name: lightspeed-stack.llm
+      rules:
+        - alert: LightspeedOpenAIProviderSpike
+          expr: |
+            rate(ls_llm_calls_total{provider="openai"}[5m])
+            > 3 * rate(ls_llm_calls_total{provider="openai"}[1h])
+          for: 5m
+          labels:
+            severity: warning
+            alert_route: slack
+          annotations:
+            summary: "OpenAI provider LLM call spike detected (model: `{{ $labels.model }}`)"
+            description: "The 5-minute LLM call rate for provider `openai`, model `{{ $labels.model }}` is more than 3x the 1-hour baseline rate, suggesting an unusual traffic spike."
+
     - name: rolling-demo.health
       rules:
         - alert: RollingDemoPodNotReady
