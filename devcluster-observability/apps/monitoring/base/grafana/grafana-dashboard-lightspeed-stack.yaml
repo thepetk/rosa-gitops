@@ -51,7 +51,7 @@ spec:
           "gridPos": { "x": 6, "y": 1, "w": 6, "h": 5 },
           "fieldConfig": {
             "defaults": {
-              "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] }
             }
           },
           "targets": [
