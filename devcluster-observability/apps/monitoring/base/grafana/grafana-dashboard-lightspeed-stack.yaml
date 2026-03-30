@@ -207,131 +207,47 @@ spec:
 
         {
           "type": "row",
-          "title": "Model Performance",
-          "gridPos": { "x": 0, "y": 30, "w": 24, "h": 1 }
-        },
-
-        {
-          "type": "timeseries",
-          "title": "Avg LLM Call Duration per Model",
-          "description": "Average call duration per model and provider. Non-streaming calls use ls_llm_duration_seconds; streaming calls use ls_llm_ttft_seconds (time-to-first-token) as the available latency signal.",
-          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 31, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "s", "custom": { "spanNulls": true } } },
-          "targets": [
-            {
-              "expr": "sum by (model, provider, call_type) (rate(ls_llm_duration_seconds_sum[5m])) / sum by (model, provider, call_type) (rate(ls_llm_duration_seconds_count[5m]))",
-              "legendFormat": "{{ model }} ({{ provider }}) {{ call_type }}"
-            },
-            {
-              "expr": "sum by (model, provider) (rate(ls_llm_ttft_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_ttft_seconds_count[5m]))",
-              "legendFormat": "{{ model }} ({{ provider }}) ttft"
-            }
-          ]
-        },
-
-        {
-          "type": "timeseries",
-          "title": "LLM Call Duration p95 per Model",
-          "description": "95th-percentile latency per model and provider. Non-streaming calls use ls_llm_duration_seconds; streaming calls use ls_llm_ttft_seconds (time-to-first-token).",
-          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 12, "y": 31, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "s", "custom": { "spanNulls": true } } },
-          "targets": [
-            {
-              "expr": "histogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_duration_seconds_bucket[5m])))",
-              "legendFormat": "{{ model }} ({{ provider }}) p95"
-            },
-            {
-              "expr": "histogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_ttft_seconds_bucket[5m])))",
-              "legendFormat": "{{ model }} ({{ provider }}) ttft p95"
-            }
-          ]
-        },
-
-        {
-          "type": "row",
           "title": "Token Efficiency",
           "gridPos": { "x": 0, "y": 38, "w": 24, "h": 1 }
         },
 
         {
           "type": "timeseries",
-          "title": "Tokens per LLM Call",
-          "description": "Average total tokens (sent + received) per LLM call, per model and provider. Both sides are aggregated to model+provider to avoid label mismatch between token metrics (which have call_type) and ls_llm_calls_total (which does not).",
+          "title": "Token Efficiency per Model",
+          "description": "Average total tokens per LLM call divided by average LLM call duration, per model/provider. Higher values indicate more tokens handled per second of call time.",
           "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 39, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "spanNulls": true } } },
-          "targets": [
-            {
-              "expr": "(sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))",
-              "legendFormat": "{{ model }} ({{ provider }})"
+          "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "custom": {
+                "spanNulls": true,
+                "lineWidth": 2
+              }
             }
-          ]
-        },
-
-        {
-          "type": "timeseries",
-          "title": "Token Throughput by Direction",
-          "description": "Total token flow per second broken down by sent vs received, per model and provider. Use this when label cardinality prevents dividing by call rate (call_type mismatch).",
-          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 12, "y": 39, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "cps" } },
+          },
           "targets": [
             {
-              "expr": "rate(ls_llm_token_sent_total[5m])",
-              "legendFormat": "sent — {{ model }} ({{ provider }}) {{ call_type }}"
-            },
-            {
-              "expr": "rate(ls_llm_token_received_total[5m])",
-              "legendFormat": "received — {{ model }} ({{ provider }}) {{ call_type }}"
-            }
-          ]
-        },
-
-        {
-          "type": "row",
-          "title": "Model Efficiency",
-          "gridPos": { "x": 0, "y": 46, "w": 24, "h": 1 }
-        },
-
-        {
-          "type": "timeseries",
-          "title": "Token Yield per Second of Call Duration",
-          "description": "Avg tokens per call divided by avg call duration, per model and provider. Higher means the model returns more tokens for the time spent — a combined throughput and efficiency signal. Uses ls_llm_duration_seconds for non-streaming and ls_llm_ttft_seconds for streaming.",
-          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 47, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "spanNulls": true } } },
-          "targets": [
-            {
-              "expr": "(\n  (sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m])))\n  / sum by (model, provider) (rate(ls_llm_calls_total[5m]))\n)\n/\n(\n  sum by (model, provider) (rate(ls_llm_duration_seconds_sum[5m]))\n  / sum by (model, provider) (rate(ls_llm_duration_seconds_count[5m]))\n)",
+              "refId": "A",
+              "expr": "((sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))) / (sum by (model, provider) (rate(ls_llm_duration_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_duration_seconds_count[5m])))",
               "legendFormat": "{{ model }} ({{ provider }})"
             },
             {
-              "expr": "(\n  (sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m])))\n  / sum by (model, provider) (rate(ls_llm_calls_total[5m]))\n)\n/\n(\n  sum by (model, provider) (rate(ls_llm_ttft_seconds_sum[5m]))\n  / sum by (model, provider) (rate(ls_llm_ttft_seconds_count[5m]))\n)",
+              "refId": "B",
+              "expr": "((sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))) / (sum by (model, provider) (rate(ls_llm_ttft_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_ttft_seconds_count[5m])))",
               "legendFormat": "{{ model }} ({{ provider }}) streaming"
             }
-          ]
-        },
-
-        {
-          "type": "timeseries",
-          "title": "Token Yield per Second — p95 Duration",
-          "description": "Avg tokens per call divided by p95 call duration. Shows efficiency under worst-case latency conditions — a drop here signals tail-latency degradation even when the average looks healthy.",
-          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 12, "y": 47, "w": 12, "h": 7 },
-          "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "spanNulls": true } } },
-          "targets": [
-            {
-              "expr": "(\n  (sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m])))\n  / sum by (model, provider) (rate(ls_llm_calls_total[5m]))\n)\n/\nhistogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_duration_seconds_bucket[5m])))",
-              "legendFormat": "{{ model }} ({{ provider }}) p95"
+          ],
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
             },
-            {
-              "expr": "(\n  (sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m])))\n  / sum by (model, provider) (rate(ls_llm_calls_total[5m]))\n)\n/\nhistogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_ttft_seconds_bucket[5m])))",
-              "legendFormat": "{{ model }} ({{ provider }}) ttft p95"
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
             }
-          ]
+          }
         }
-
       ]
     }
