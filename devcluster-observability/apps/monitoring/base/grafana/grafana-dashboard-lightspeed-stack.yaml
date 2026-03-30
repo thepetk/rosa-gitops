@@ -208,7 +208,7 @@ spec:
         {
           "type": "row",
           "title": "Token Efficiency",
-          "gridPos": { "x": 0, "y": 38, "w": 24, "h": 1 }
+          "gridPos": { "x": 0, "y": 30, "w": 24, "h": 1 }
         },
 
         {
