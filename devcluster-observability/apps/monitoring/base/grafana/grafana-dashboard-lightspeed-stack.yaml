@@ -216,7 +216,7 @@ spec:
           "title": "Token Efficiency per Model",
           "description": "Average total tokens per LLM call divided by average LLM call duration, per model/provider. Higher values indicate more tokens handled per second of call time.",
           "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 39, "w": 24, "h": 8 },
+          "gridPos": { "x": 0, "y": 31, "w": 24, "h": 8 },
           "fieldConfig": {
             "defaults": {
               "unit": "ops",
