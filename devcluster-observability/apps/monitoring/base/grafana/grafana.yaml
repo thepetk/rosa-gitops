@@ -14,7 +14,7 @@ spec:
     server:
       root_url: "%(GF_SERVER_ROOT_URL)s"
     auth.basic:
-      disable_login_form: "true"
+      disable_login_form: "false"
     auth.generic_oauth:
       enabled: "true"
       name: Red Hat SSO
