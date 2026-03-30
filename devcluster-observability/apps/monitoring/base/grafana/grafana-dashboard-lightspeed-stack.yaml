@@ -224,7 +224,7 @@ spec:
             }
           },
           "options": {
-            "orientation": "horizontal",
+            "orientation": "auto",
             "barWidth": 0.7,
             "groupWidth": 0.7,
             "legend": { "displayMode": "list", "placement": "bottom" },
