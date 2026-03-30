@@ -212,20 +212,30 @@ spec:
         },
 
         {
-          "type": "timeseries",
+          "type": "barchart",
           "title": "Token Efficiency per Model",
-          "description": "Average total tokens per LLM call divided by average LLM call duration, per model/provider. Higher values indicate more tokens handled per second of call time.",
+          "description": "Avg tokens per call divided by avg call duration — tokens produced per second of wall-clock call time. Higher = more efficient. Each bar is the mean over the selected time range. Non-streaming uses ls_llm_duration_seconds; streaming uses ls_llm_ttft_seconds.",
           "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 31, "w": 24, "h": 8 },
+          "gridPos": { "x": 0, "y": 31, "w": 24, "h": 10 },
           "fieldConfig": {
             "defaults": {
               "unit": "ops",
-              "custom": {
-                "spanNulls": true,
-                "lineWidth": 2
-              }
+              "custom": { "fillOpacity": 80 }
             }
           },
+          "options": {
+            "orientation": "horizontal",
+            "barWidth": 0.7,
+            "groupWidth": 0.7,
+            "legend": { "displayMode": "list", "placement": "bottom" },
+            "tooltip": { "mode": "single", "sort": "desc" }
+          },
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": { "reducers": ["mean"] }
+            }
+          ],
           "targets": [
             {
               "refId": "A",
@@ -237,17 +247,7 @@ spec:
               "expr": "((sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))) / (sum by (model, provider) (rate(ls_llm_ttft_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_ttft_seconds_count[5m])))",
               "legendFormat": "{{ model }} ({{ provider }}) streaming"
             }
-          ],
-          "options": {
-            "legend": {
-              "displayMode": "list",
-              "placement": "bottom"
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
-          }
+          ]
         }
       ]
     }
