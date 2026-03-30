@@ -203,6 +203,82 @@ spec:
           "targets": [
             { "expr": "rate(ls_llm_calls_failures_total[5m])", "legendFormat": "{{ model }} ({{ provider }})" }
           ]
+        },
+
+        {
+          "type": "row",
+          "title": "Model Performance",
+          "gridPos": { "x": 0, "y": 30, "w": 24, "h": 1 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Avg LLM Call Duration per Model",
+          "description": "Average duration of non-streaming LLM calls (topic_summary) per model and provider. Derived from ls_llm_duration_seconds histogram.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 0, "y": 31, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "s" } },
+          "targets": [
+            {
+              "expr": "rate(ls_llm_duration_seconds_sum[5m]) / rate(ls_llm_duration_seconds_count[5m])",
+              "legendFormat": "{{ model }} ({{ provider }}) — {{ call_type }}"
+            }
+          ]
+        },
+
+        {
+          "type": "timeseries",
+          "title": "LLM Call Duration p95 per Model",
+          "description": "95th-percentile duration of non-streaming LLM calls, broken down by model and provider.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 12, "y": 31, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "s" } },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_duration_seconds_bucket[5m])))",
+              "legendFormat": "{{ model }} ({{ provider }}) p95"
+            }
+          ]
+        },
+
+        {
+          "type": "row",
+          "title": "Token Efficiency",
+          "gridPos": { "x": 0, "y": 38, "w": 24, "h": 1 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Tokens per LLM Call",
+          "description": "Average total tokens (sent + received) consumed per LLM call, per model and provider. A rising value means each call is growing more expensive.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 0, "y": 39, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2 } } },
+          "targets": [
+            {
+              "expr": "(rate(ls_llm_token_sent_total[5m]) + rate(ls_llm_token_received_total[5m])) / rate(ls_llm_calls_total[5m])",
+              "legendFormat": "{{ model }} ({{ provider }})"
+            }
+          ]
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Token Throughput by Direction",
+          "description": "Total token flow per second broken down by sent vs received, per model and provider. Use this when label cardinality prevents dividing by call rate (call_type mismatch).",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 12, "y": 39, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "cps" } },
+          "targets": [
+            {
+              "expr": "rate(ls_llm_token_sent_total[5m])",
+              "legendFormat": "sent — {{ model }} ({{ provider }}) {{ call_type }}"
+            },
+            {
+              "expr": "rate(ls_llm_token_received_total[5m])",
+              "legendFormat": "received — {{ model }} ({{ provider }}) {{ call_type }}"
+            }
+          ]
         }
 
       ]
