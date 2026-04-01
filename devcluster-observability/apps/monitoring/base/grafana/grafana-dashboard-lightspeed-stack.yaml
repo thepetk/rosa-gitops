@@ -279,6 +279,148 @@ spec:
               "legendFormat": "{{ model }} ({{ provider }})"
             }
           ]
+        },
+
+        {
+          "type": "row",
+          "title": "LLM Judge — Quality Scores",
+          "gridPos": { "x": 0, "y": 46, "w": 24, "h": 1 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Quality Score per Metric — 5m avg",
+          "description": "Average LLM-as-a-judge quality score (0.0–1.0) per metric dimension over the last 5 minutes. Higher is better for all metrics.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 0, "y": 47, "w": 24, "h": 8 },
+          "fieldConfig": {
+            "defaults": { "unit": "percentunit", "min": 0, "max": 1 }
+          },
+          "targets": [
+            {
+              "expr": "sum by (metric_name) (rate(ls_llm_judge_score_sum[5m])) / sum by (metric_name) (rate(ls_llm_judge_score_count[5m]))",
+              "legendFormat": "{{ metric_name }}"
+            }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Answer Relevancy",
+          "description": "Average answer relevancy score (0.0–1.0) over the last 5 minutes.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 0, "y": 55, "w": 4, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"answer_relevancy\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"answer_relevancy\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Contextual Relevancy",
+          "description": "Average contextual relevancy score (0.0–1.0) over the last 5 minutes.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 4, "y": 55, "w": 4, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"contextual_relevancy\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"contextual_relevancy\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Helpfulness",
+          "description": "Average helpfulness score (0.0–1.0) over the last 5 minutes.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 8, "y": 55, "w": 4, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"helpfulness\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"helpfulness\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Prompt Alignment",
+          "description": "Average prompt alignment score (0.0–1.0) over the last 5 minutes.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 12, "y": 55, "w": 4, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"prompt_alignment\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"prompt_alignment\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Hallucination (absence)",
+          "description": "Average hallucination-absence score (0.0–1.0) over the last 5 minutes. Higher means fewer hallucinations.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 16, "y": 55, "w": 4, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"hallucination\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"hallucination\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Toxicity (absence)",
+          "description": "Average toxicity-absence score (0.0–1.0) over the last 5 minutes. Higher means less toxic.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 20, "y": 55, "w": 2, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"toxicity\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"toxicity\"}[5m]))", "instant": true }
+          ]
+        },
+
+        {
+          "type": "stat",
+          "title": "Bias (absence)",
+          "description": "Average bias-absence score (0.0–1.0) over the last 5 minutes. Higher means less biased.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 22, "y": 55, "w": 2, "h": 4 },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit", "min": 0, "max": 1,
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.75 }] }
+            }
+          },
+          "targets": [
+            { "expr": "sum(rate(ls_llm_judge_score_sum{metric_name=\"bias\"}[5m])) / sum(rate(ls_llm_judge_score_count{metric_name=\"bias\"}[5m]))", "instant": true }
+          ]
         }
       ]
     }
