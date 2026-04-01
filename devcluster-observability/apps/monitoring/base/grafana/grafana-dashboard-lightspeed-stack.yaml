@@ -207,45 +207,76 @@ spec:
 
         {
           "type": "row",
-          "title": "Token Efficiency",
+          "title": "Query — Duration & Token Throughput",
           "gridPos": { "x": 0, "y": 30, "w": 24, "h": 1 }
         },
 
         {
-          "type": "barchart",
-          "title": "Token Efficiency per Model",
-          "description": "Avg tokens per call divided by avg call duration — tokens produced per second of wall-clock call time. Higher = more efficient. Each bar is the mean over the selected time range. Non-streaming uses ls_llm_duration_seconds; streaming uses ls_llm_ttft_seconds.",
+          "type": "timeseries",
+          "title": "Avg Query Duration per Model",
+          "description": "Average end-to-end LLM call duration for non-streaming (query) requests, per model and provider. Lower is better.",
           "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
-          "gridPos": { "x": 0, "y": 31, "w": 24, "h": 10 },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ops",
-              "custom": { "fillOpacity": 80 }
-            }
-          },
-          "options": {
-            "orientation": "auto",
-            "barWidth": 0.7,
-            "groupWidth": 0.7,
-            "legend": { "displayMode": "list", "placement": "bottom" },
-            "tooltip": { "mode": "single", "sort": "desc" }
-          },
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": { "reducers": ["mean"] }
-            }
-          ],
+          "gridPos": { "x": 0, "y": 31, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "s" } },
           "targets": [
             {
-              "refId": "A",
-              "expr": "((sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))) / (sum by (model, provider) (rate(ls_llm_duration_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_duration_seconds_count[5m])))",
+              "expr": "sum by (model, provider) (rate(ls_llm_duration_seconds_sum{call_type=\"query\"}[5m])) / sum by (model, provider) (rate(ls_llm_duration_seconds_count{call_type=\"query\"}[5m]))",
               "legendFormat": "{{ model }} ({{ provider }})"
+            }
+          ]
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Query Token Throughput per Model",
+          "description": "Output tokens received divided by total LLM processing time for non-streaming requests — tokens per second of model compute. Higher means the model generates more tokens per second it spends computing.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 12, "y": 31, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "ops" } },
+          "targets": [
+            {
+              "expr": "sum by (model, provider) (rate(ls_llm_token_received_total{call_type=\"query\"}[5m])) / sum by (model, provider) (rate(ls_llm_duration_seconds_sum{call_type=\"query\"}[5m]))",
+              "legendFormat": "{{ model }} ({{ provider }})"
+            }
+          ]
+        },
+
+        {
+          "type": "row",
+          "title": "Streaming — TTFT & Token Throughput",
+          "gridPos": { "x": 0, "y": 38, "w": 24, "h": 1 }
+        },
+
+        {
+          "type": "timeseries",
+          "title": "TTFT p50 / p95 per Model",
+          "description": "Time-to-first-token for streaming requests at the 50th and 95th percentile, per model and provider. Lower is better.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 0, "y": 39, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "s" } },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.50, sum by (le, model, provider) (rate(ls_llm_ttft_seconds_bucket{call_type=\"streaming_query\"}[5m])))",
+              "legendFormat": "p50 {{ model }} ({{ provider }})"
             },
             {
-              "refId": "B",
-              "expr": "((sum by (model, provider) (rate(ls_llm_token_sent_total[5m])) + sum by (model, provider) (rate(ls_llm_token_received_total[5m]))) / sum by (model, provider) (rate(ls_llm_calls_total[5m]))) / (sum by (model, provider) (rate(ls_llm_ttft_seconds_sum[5m])) / sum by (model, provider) (rate(ls_llm_ttft_seconds_count[5m])))",
-              "legendFormat": "{{ model }} ({{ provider }}) streaming"
+              "expr": "histogram_quantile(0.95, sum by (le, model, provider) (rate(ls_llm_ttft_seconds_bucket{call_type=\"streaming_query\"}[5m])))",
+              "legendFormat": "p95 {{ model }} ({{ provider }})"
+            }
+          ]
+        },
+
+        {
+          "type": "timeseries",
+          "title": "Streaming Token Throughput per Model",
+          "description": "Output tokens received divided by total stream duration for streaming requests — tokens per second of stream time. Higher means the model streams faster relative to how long the stream was open.",
+          "datasource": { "type": "prometheus", "uid": "prometheus-user-workload" },
+          "gridPos": { "x": 12, "y": 39, "w": 12, "h": 7 },
+          "fieldConfig": { "defaults": { "unit": "ops" } },
+          "targets": [
+            {
+              "expr": "sum by (model, provider) (rate(ls_llm_token_received_total{call_type=\"streaming_query\"}[5m])) / sum by (model, provider) (rate(ls_llm_stream_duration_seconds_sum{call_type=\"streaming_query\"}[5m]))",
+              "legendFormat": "{{ model }} ({{ provider }})"
             }
           ]
         }
